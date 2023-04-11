@@ -7,7 +7,9 @@ import gsap from 'gsap'
 
 let renderer , scene , camera , control;
 let geometry , material , pointCloud;
-var opacityArray;
+var opacityArray = [];
+var q = ["pink", "red", "red", "red", "maroon", "maroon", "maroon"];
+
 
 const canvasWebGl = document.querySelector('canvas.webgl');
 
@@ -85,19 +87,29 @@ function init()
   earthTexture.repeat.set(1, 1);
   geometry = new THREE.SphereGeometry(5,256,128)
 
+
+  // Color each points
   let colors = [];
   let color = new THREE.Color();
-  var q = ["pink", "red", "red", "red", "maroon", "maroon", "maroon"];
-  for (let i = 0; i < geometry.attributes.position.count; i++) {
-    color.set(q[Math.floor(Math.random() * ((q.length - 1) - 0) + 0)]);
+  for (let i = 0; i < geometry.attributes.position.count; i++) 
+  {
+    color.set(q[Math.floor(Math.random() * ((q.length - 1) - 0) + 0)]);  // ! not necessary
     color.toArray(colors, i * 3);
   }
-
   geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3));
+
+
+
+  // opacity
+  for (var i = 0; i < geometry.attributes.position.count; i++) {
+    opacityArray.push(Math.random());
+  }
+
+
 
   var disk = textureLoader.load('circle.png');
 
-  var pointCloud = new THREE.Points(geometry, new THREE.ShaderMaterial({
+  pointCloud = new THREE.Points(geometry, new THREE.ShaderMaterial({
     vertexColors: THREE.VertexColors,
     uniforms: {
       visibility: {
@@ -138,7 +150,7 @@ function init()
         uniform sampler2D visibility;
         uniform float shift;
         uniform sampler2D shape;
-      
+
         varying vec2 vUv;
         varying vec3 vColor;
   
@@ -171,11 +183,8 @@ function init()
   gsap.to(pointCloud.position,{ z: 0, duration: 0.5, ease: "Back.inOut(1.7)"})
 
 
-  opacityArray = [];
 
-  for (var i = 0; i < geometry.attributes.position.count; i++) {
-    opacityArray.push(Math.random());
-  }
+
 
 
 }
@@ -208,13 +217,17 @@ function animate()
   {
     then = now - (elapsed % fpsInterval)
     const delta = clock.getDelta();
-   
-    for (var i = 0; i < geometry.attributes.position.count; i++) {
-      opacityArray[i] += (Math.random() - 0.5) * 0.1; // adjust the opacity by a random amount
-      opacityArray[i] = Math.max(0, Math.min(1, opacityArray[i])); // clamp the opacity value to between 0 and 1
-      geometry.attributes.color.setXYZ(i, opacityArray[i], opacityArray[i], opacityArray[i]); // set the color attribute to the new opacity value
-    }
-    geometry.attributes.color.needsUpdate = true;
+ 
+    
+      for (var i = 0; i < geometry.attributes.position.count; i++) {
+    
+        opacityArray[i] += (Math.random() - 0.5) * 0.1; // adjust the opacity by a random amount
+        opacityArray[i] = Math.max(0, Math.min(1, opacityArray[i])); // clamp the opacity value to between 0 and 1
+        var color = new THREE.Color(q[Math.floor(Math.random() * q.length)]);
+        geometry.attributes.color.setXYZ(i, color.r, color.g, color.b); // set the color attribute to the new color value
+      }
+      geometry.attributes.color.needsUpdate = true;
+
 
 
     stats.update()
@@ -222,12 +235,6 @@ function animate()
     renderer.render( scene, camera );
   }
 }
-
-
-
-
-
-
 
 
 
