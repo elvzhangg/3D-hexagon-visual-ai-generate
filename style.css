@@ -28,3 +28,7 @@ a:hover
 {
   color: dodgerblue
 }
+
+#projection {
+  display:none;
+}
