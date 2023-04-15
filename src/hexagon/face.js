@@ -1,12 +1,11 @@
 import { Point } from "./point";
 
-var _faceCount = 0;
-
-export class Face 
+let _faceCount = 0;
+export class Face
 {
-    constructor(point1, point2, point3, register) {
+    constructor(point1, point2, point3, register) 
+    {
         this.id = _faceCount++;
-
         if(register == undefined){
             register = true;
         }
@@ -15,29 +14,11 @@ export class Face
             point1,
             point2,
             point3
-            ];
+        ];
         if(register){
             point1.registerFace(this);
             point2.registerFace(this);
             point3.registerFace(this);
-        }
-    }
-};
-
-Face.prototype.getOtherPoints = function(point1){
-    var other = [];
-    for(var i = 0; i < this.points.length; i++){
-        if(this.points[i].toString() !== point1.toString()){
-            other.push(this.points[i]);
-        }
-    }
-    return other;
-}
-
-Face.prototype.findThirdPoint = function(point1, point2){
-    for(var i = 0; i < this.points.length; i++){
-        if(this.points[i].toString() !== point1.toString() && this.points[i].toString() !== point2.toString()){
-            return this.points[i];
         }
     }
 }
@@ -73,4 +54,14 @@ Face.prototype.getCentroid = function(clear){
 
     return centroid;
 
+}
+
+Face.prototype.getOtherPoints = function(point1){
+    var other = [];
+    for(var i = 0; i < this.points.length; i++){
+        if(this.points[i].toString() !== point1.toString()){
+            other.push(this.points[i]);
+        }
+    }
+    return other;
 }

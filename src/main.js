@@ -5,18 +5,11 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 import { Pane } from 'tweakpane'
 import gsap from 'gsap'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { Hexasphere } from './hexagon-reverse/hexagon';
+import { Hexasphere } from './hexagon/hexagon';
 
 
 let renderer , scene , camera , control;
 let geometry , material , mesh, mesh2;
-
-
-
-
-let textureLoader = new THREE.TextureLoader();
-
-
 
 
 const canvasWebGl = document.querySelector('canvas.webgl');
@@ -86,95 +79,28 @@ function init()
   scene.add( light );
   light.position.set(1800,500,1800);
 
-  // materials = [];
-  // for(let i = 1; i < 28; i++){
-  //   let m = new THREE.MeshBasicMaterial({
-  //     // color: Math.random() * 0x7f7f7f + 0x7f7f7f,
-  //     map: textureLoader.load(`00${i}.jpg`)
-  //   });
-  //   materials.push( m );
-  // }
 
-  // mesh = new THREE.Mesh(createIcosahedron(4,1), materials);
-  // scene.add(mesh);
-  // mesh.position.z = -5
+  // Texture Image
 
-  // gsap.to(mesh.position, {z : 0, duration: 0.5, ease: "Back.inOut(1.5)"})
-
-
-  // mesh2 = mesh = new THREE.Mesh(createIcosahedron(1,1), materials); 
-  // mesh2.position.x = 6
-  // scene.add(mesh2);
-
-
-  
-
-  var img = document.getElementById("projection");
-  var projectionCanvas = document.createElement('canvas');
-  var projectionContext = projectionCanvas.getContext('2d');
-
-  projectionCanvas.width = img.width;
-  projectionCanvas.height = img.height;
-  projectionContext.drawImage(img, 0, 0, img.width, img.height);
-  
-
-  var pixelData = null;
-
-  var maxLat = -100;
-  var maxLon = 0;
-  var minLat = 0;
-  var minLon = 0;
-
-
-  var isLand = function(lat, lon)
-  {
-
-      var x = parseInt(img.width * (lon + 180) / 360);
-      var y = parseInt(img.height * (lat+90) / 180);
-
-      if(pixelData == null){
-          pixelData = projectionContext.getImageData(0,0,img.width, img.height);
-      }
-      return pixelData.data[(y * pixelData.width + x) * 4] === 0;
-  };
-
+  let textureLoader = new THREE.TextureLoader();
   var meshMaterials = [];
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x7cfc00, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x397d02, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x77ee00, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x61b329, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x4cbb17, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00ee00, transparent: true}));
-  meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00aa11, transparent: true}));
+  for(let i = 1; i < 31; i++){
+    let m = new THREE.MeshBasicMaterial({
+      // color: Math.random() * 0x7f7f7f + 0x7f7f7f,
+      map:textureLoader.load(`00${i}.jpg`)
+    });
+    meshMaterials.push( m );
+  }
 
-  var oceanMaterial = []
-  oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f2342, transparent: true}));
-  oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f1e38, transparent: true}));
-
-
-
-  var introTick = 0;
-  var seenTiles = {};
-  var currentTiles = [];
-
-
-  var createScene = function(radius, divisions, tileSize){
-      introTick = -1;
-      while(scene.children.length > 0){ 
-          scene.remove(scene.children[0]); 
-      }
+  let createScene = function(radius, divisions, tileSize) 
+  {
+      // Calling Hexaspher class
       var hexasphere = new Hexasphere(radius, divisions, tileSize);
       console.log(hexasphere);
 
-      // var testGeometry = new THREE.BufferGeometry()
-      // console.log(testGeometry);
-
       for(var i = 0; i< hexasphere.tiles.length; i++)
-        {
+      {
             var t = hexasphere.tiles[i];
-            var latLon = t.getLatLon(hexasphere.radius);
 
             // Creatd With BefferGeometry Instead of Geometry 
             // Because deprecated
@@ -182,7 +108,10 @@ function init()
 
             // It's depend of each vertex if have 5 vertex will adding with 5 stucture
             // And it's have 6 vertex will adding with 6 structure
-            let vertexArray;                  
+            let vertexArray;       
+            let uvArray;
+            
+            // Pentagon Shape
             if(t.boundary.length == 5)
             {
               // Create 5 verteices
@@ -193,37 +122,72 @@ function init()
                 new THREE.Vector3(0, 0, 1),
                 new THREE.Vector3(1, 1, 1),
               ]; 
+
+              // ! arrange order Something here
+              //  Create 5 verteices
+              uvArray = [
+                new THREE.Vector2(0.5, 0.5),
+                new THREE.Vector2(1, 1),
+                new THREE.Vector2(0, 1),
+                new THREE.Vector2(0, 0),
+                new THREE.Vector2(1, 0)
+              ];
+
             }
             
+            // Hexagon Shape
             if(t.boundary.length == 6){
                 // Create 6 verteices
                 vertexArray = [
-                  new THREE.Vector3(0, 0, 0),
                   new THREE.Vector3(1, 0, 0),
                   new THREE.Vector3(0, 1, 0),
                   new THREE.Vector3(0, 0, 1),
-                  new THREE.Vector3(1, 1, 1),
-                  new THREE.Vector3(1, 1, 1),
+                  new THREE.Vector3(0, 1, 0),
+                  new THREE.Vector3(1, 0, 0),
+                  new THREE.Vector3(0, 0, 1),
                 ]; 
+
+                // ! arrange order Something here
+                 // Create 6 verteices
+                uvArray = [
+                  new THREE.Vector2(0.5, 0.5),
+                  new THREE.Vector2(1, 0.75),
+                  new THREE.Vector2(1, 0.25),
+                  new THREE.Vector2(0.5, 0),
+                  new THREE.Vector2(0, 0.25),
+                  new THREE.Vector2(0, 0.75)
+                ];
+
             }
 
+            // Create uv for mapping texture images
+            const uvAttribute = new THREE.BufferAttribute(new Float32Array(uvArray.length * 2), 2);
+            
+            // Create vertex for geometry
             const vertices = new Float32Array(vertexArray.length * 3); // 6 vertices * 3 values per vertex
+            
             // take vertex from hexasphere put into buffergeometry
             for(var j = 0; j< t.boundary.length; j++){
            
+              // value from Hexasphere class and put it into 'position'
               var bp = t.boundary[j];
               vertices[j * 3] = bp.x;
               vertices[j * 3 + 1] = bp.y;
               vertices[j * 3 + 2] = bp.z;
+
+              // take a structure from above and put it into 'uv'
+              uvAttribute.setXY(j, uvArray[j].x, uvArray[j].y);
             }
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            console.log(geometry);
+            geometry.setAttribute('uv', uvAttribute);
+
 
 
             // Create Faces
+            // 15 =~ pentagon
+            // 18 =~ hexagon
             let faces;
-
             if(geometry.attributes.position.array.length == 15){
               faces = [
                 [0, 1, 2],
@@ -243,7 +207,6 @@ function init()
 
             const indices = new Uint16Array(faces.length * 3);
     
-         
             for (let i = 0; i < faces.length; i++) {
               const face = faces[i];
               indices[i * 3] = face[0];
@@ -254,24 +217,20 @@ function init()
             geometry.setIndex(new THREE.BufferAttribute(indices, 1));
             
 
-            if(isLand(latLon.lat, latLon.lon)){
-                material = meshMaterials[Math.floor(Math.random() * meshMaterials.length)]
-            } else {
-                material = oceanMaterial[Math.floor(Math.random() * oceanMaterial.length)]
-            }
+            // Material
+            material = meshMaterials[i]
 
-            material.opacity = 0.3;
+
 
             var mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
+
             hexasphere.tiles[i].mesh = mesh;
-
-        }
-
-
+            // console.log(mesh);
+      }
   };
   
-  createScene(5, 3, .95);
+  createScene(5, 2, .95);
 
 
   let box = new THREE.BoxGeometry()

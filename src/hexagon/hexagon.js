@@ -1,15 +1,12 @@
-import { Tile } from './tile'
-import { Face } from './face'
-import { Point } from './point';
+import { Point } from './point'
+import { Face } from './face';
+import { Tile } from './tile';
 
-export class Hexasphere 
-{
-    constructor(radius, numDivisions, hexSize) 
-    {
-        
+export class Hexasphere {
+    constructor(radius, numDivisions, hexSize) {
         this.radius = radius;
         var tao = 1.61803399;
-    
+        
         var corners = [
             new Point(1000, tao * 1000, 0),
             new Point(-1000, tao * 1000, 0),
@@ -24,27 +21,12 @@ export class Hexasphere
             new Point(tao * 1000,0,-1000),
             new Point(-tao * 1000,0,-1000)
         ];
-    
-        let test01 = [
-            new Point(1000, tao * 1000, 0),
-                new Point(-1000, tao * 1000, 0),
-                new Point(1000,-tao * 1000,0),
-                new Point(-1000,-tao * 1000,0),
-                new Point(0,1000,tao * 1000),
-                new Point(0,-1000,tao * 1000),
-                new Point(0,1000,-tao * 1000),
-                new Point(0,-1000,-tao * 1000),
-                new Point(tao * 1000,0,1000),
-                new Point(-tao * 1000,0,1000),
-                new Point(tao * 1000,0,-1000),
-                new Point(-tao * 1000,0,-1000)
-        ]
-        console.log(test01)
 
-        this.points = {};
+        let points = {};
         for(var i = 0; i< corners.length; i++){
-            this.points[corners[i]] = corners[i];
+            points[corners[i]] = corners[i];
         }
+
         var faces = [
             new Face(corners[0], corners[1], corners[4], false),
             new Face(corners[1], corners[9], corners[4], false),
@@ -67,20 +49,32 @@ export class Hexasphere
             new Face(corners[6], corners[0], corners[10], false),
             new Face(corners[9], corners[1], corners[11], false)
         ];
+    
+        var getPointIfExists = function(point){
+            if(points[point]){
+                // console.log("EXISTING!");
+                return points[point];
+            } else {
+                // console.log("NOT EXISTING!");
+                points[point] = point;
+                return point;
+            }
+        };
 
-        // console.log(faces[0])
 
         var newFaces = [];
 
-        for(var f = 0; f  < faces.length; f++){
+        for(var f = 0; f< faces.length; f++){
+            
             // console.log("-0---");
             var prev = null;
             var bottom = [faces[f].points[0]];
-            var left = faces[f].points[0].subdivide(faces[f].points[1], numDivisions, this.getPointIfExists);
-            var right = faces[f].points[0].subdivide(faces[f].points[2], numDivisions, this.getPointIfExists);
+            var left = faces[f].points[0].subdivide(faces[f].points[1], numDivisions, getPointIfExists);
+            var right = faces[f].points[0].subdivide(faces[f].points[2], numDivisions, getPointIfExists);
             for(var i = 1; i<= numDivisions; i++){
                 prev = bottom;
-                bottom = left[i].subdivide(right[i], i, this.getPointIfExists);
+                // console.log(getPointIfExists);
+                bottom = left[i].subdivide(right[i], i, getPointIfExists);
                 for(var j = 0; j< i; j++){
                     var nf = new Face(prev[j], bottom[j], bottom[j+1]); 
                     newFaces.push(nf);
@@ -92,53 +86,48 @@ export class Hexasphere
                 }
             }
         }
-    
+
         faces = newFaces;
-    
+
         var newPoints = {};
-        for(var p in this.points){
-            var np = this.points[p].project(radius);
+        for(var p in points){
+            var np = points[p].project(radius);
             newPoints[np] = np;
         }
-    
-        this.points = newPoints;
+
+        points = newPoints;
+
+       
     
         this.tiles = [];
         this.tileLookup = {};
     
         // create tiles and store in a lookup for references
-        for(var p in this.points){
-            var newTile = new Tile(this.points[p], hexSize);
+        for(var p in points){
+            var newTile = new Tile(points[p], hexSize);
             this.tiles.push(newTile);
             this.tileLookup[newTile.toString()] = newTile;
         }
-    
-        // resolve neighbor references now that all have been created
+
+      
+
+        //  resolve neighbor references now that all have been created
         for(var t in this.tiles){
             var _this = this;
             this.tiles[t].neighbors = this.tiles[t].neighborIds.map(function(item){return _this.tileLookup[item]});
         }
+
+
+        console.log(corners);
+        console.log(points);
+        console.log(faces);
+        console.log(newFaces);
+        console.log(newFaces);
+        console.log(this.tiles);
+        console.log(this.tileLookup);
+
     }
-    
-
-
-    getPointIfExists(point)
-    {
-        if(this.points[point]){
-            // console.log("EXISTING!");
-            return this.points[point];
-        } else {
-            // console.log("NOT EXISTING!");
-            this.points[point] = point;
-            return point;
-        }
-    };
-
-    
-
-
-
-};
+}
 
 Hexasphere.prototype.toJson = function() {
 
@@ -187,4 +176,3 @@ Hexasphere.prototype.toObj = function() {
 
     return objText;
 }
-
