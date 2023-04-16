@@ -5,6 +5,8 @@ import { Tile } from './tile';
 export class Hexasphere {
     constructor(radius, numDivisions, hexSize) {
         this.radius = radius;
+
+        // Golden ratio
         var tao = 1.61803399;
         
         var corners = [
@@ -118,13 +120,13 @@ export class Hexasphere {
         }
 
 
-        console.log(corners);
-        console.log(points);
-        console.log(faces);
-        console.log(newFaces);
-        console.log(newFaces);
-        console.log(this.tiles);
-        console.log(this.tileLookup);
+        // console.log(corners);
+        // console.log(points);
+        // console.log(faces);
+        // console.log(newFaces);
+        // console.log(newFaces);
+        // console.log(this.tiles);
+        // console.log(this.tileLookup);
 
     }
 }
