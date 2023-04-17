@@ -2,6 +2,9 @@ import { Point } from './point'
 import { Face } from './face';
 import { Tile } from './tile';
 
+// Created by Supadett Pinsuwannabut
+// It's can't to have hexagon tiles cover all sphere , but if we except
+// some 12 petagon tiles this will be possible
 export class Hexasphere {
     constructor(radius, numDivisions, hexSize) {
         this.radius = radius;
@@ -9,6 +12,10 @@ export class Hexasphere {
         // Golden ratio
         var tao = 1.61803399;
         
+
+        // create Icosahedron the shape have 
+        // 20 faces
+        // 12 vertex (array have 12 parameter)
         var corners = [
             new Point(1000, tao * 1000, 0),
             new Point(-1000, tao * 1000, 0),
@@ -29,6 +36,8 @@ export class Hexasphere {
             points[corners[i]] = corners[i];
         }
 
+
+        // Create Faces 20 Faces of icosahedron
         var faces = [
             new Face(corners[0], corners[1], corners[4], false),
             new Face(corners[1], corners[9], corners[4], false),
@@ -63,7 +72,7 @@ export class Hexasphere {
             }
         };
 
-
+        // ! continue
         var newFaces = [];
 
         for(var f = 0; f< faces.length; f++){

@@ -8,10 +8,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Hexasphere } from './hexagon/hexagon';
 
 
-let renderer , scene , camera , control;
+let renderer , camera , control;
 let geometry , material , sphere;
 let meshMaterials;
-
+export let scene
 const canvasWebGl = document.querySelector('canvas.webgl');
 
 const sizes = {
@@ -124,10 +124,13 @@ function init()
   let textureLoader = new THREE.TextureLoader();
   meshMaterials = [];
   for(let i = 1; i < 43; i++){
+    let texture = textureLoader.load(`00${i}.jpg`)
+    texture.flipY = false
     let m = new THREE.MeshBasicMaterial({
       // color: Math.random() * 0x7f7f7f + 0x7f7f7f,
-      map:textureLoader.load(`00${i}.jpg`),
-      transparent: true
+      map:texture,
+      transparent: true,
+      // wireframe: true
     });
     meshMaterials.push( m );
   }
@@ -141,7 +144,7 @@ function init()
   createHexagonSphere3D(params.radius, params.subdivide, params.tileSize);
   // Detail 1 have 12 sides
   // Detail 2 have 42 sides
-  // Detail 3 have ?(72) sides
+  // Detail 3 have 92 sides
 
 
 
@@ -184,7 +187,7 @@ function animate()
   
     // Animation Colors
     // sphere.children[getRandomInt(0, sphere.children.length)].material.color = new THREE.Color(Math.random() * 0xffffff)
-    sphere.rotation.y += delta * 0.1
+    // sphere.rotation.y += delta * 0.1
 
   
     stats.update()
@@ -200,6 +203,7 @@ function createHexagonSphere3D(radius, divisions, tileSize)
     var hexasphere = new Hexasphere(radius, divisions, tileSize);
     // console.log(hexasphere);
 
+    // for(var i = 0; i< 3; i++)
     for(var i = 0; i< hexasphere.tiles.length; i++)
     {
           var t = hexasphere.tiles[i];
@@ -228,11 +232,11 @@ function createHexagonSphere3D(radius, divisions, tileSize)
             // ! arrange order Something here
             //  Create 5 verteices
             uvArray = [
-              new THREE.Vector2(0.5, 0.5),
-              new THREE.Vector2(1, 1),
-              new THREE.Vector2(0, 1),
-              new THREE.Vector2(0, 0),
-              new THREE.Vector2(1, 0)
+              new THREE.Vector2 (0.5, 0.0),
+              new THREE.Vector2 (1.0, 0.5),
+              new THREE.Vector2 (0.8, 1.0),
+              new THREE.Vector2 (0.2, 1.0),
+              new THREE.Vector2 (0.0, 0.4),
             ];
 
           }
@@ -252,12 +256,21 @@ function createHexagonSphere3D(radius, divisions, tileSize)
               // ! arrange order Something here
                // Create 6 verteices
               uvArray = [
-                new THREE.Vector2(0.5, 0.5),
-                new THREE.Vector2(1, 0.75),
-                new THREE.Vector2(1, 0.25),
-                new THREE.Vector2(0.5, 0),
-                new THREE.Vector2(0, 0.25),
-                new THREE.Vector2(0, 0.75)
+                // best
+                // new THREE.Vector2(0.5, 0.5),
+                // new THREE.Vector2(0.8, 0.65),
+                // new THREE.Vector2(0.6, 0.85),
+                // new THREE.Vector2(0.4, 0.85),
+                // new THREE.Vector2(0.2, 0.65),
+                // new THREE.Vector2(0.2, 0.35),
+
+            
+                new THREE.Vector2 (0.4, 0.0),
+                new THREE.Vector2 (1.0, 0.5),
+                new THREE.Vector2 (0.8, 1.0),
+                new THREE.Vector2 (0.25, 1.0),
+                new THREE.Vector2 (0.0, 0.5),
+
               ];
 
           }
@@ -270,17 +283,23 @@ function createHexagonSphere3D(radius, divisions, tileSize)
           
           // take vertex from hexasphere put into buffergeometry
           for(var j = 0; j< t.boundary.length; j++){
-         
+            
             // value from Hexasphere class and put it into 'position'
             var bp = t.boundary[j];
             vertices[j * 3] = bp.x;
             vertices[j * 3 + 1] = bp.y;
             vertices[j * 3 + 2] = bp.z;
-
-            // take a structure from above and put it into 'uv'
-            uvAttribute.setXY(j, uvArray[j].x, uvArray[j].y);
           }
           
+          
+          for(var z = 0; z< uvArray.length; z++)
+          {
+            // take a structure from above and put it into 'uv'
+            uvAttribute.setXY(z, uvArray[z].x, uvArray[z].y);
+          }
+
+
+
           geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
           geometry.setAttribute('uv', uvAttribute);
 
@@ -321,7 +340,7 @@ function createHexagonSphere3D(radius, divisions, tileSize)
 
           // Material
           material = meshMaterials[i]
-
+        
           var mesh = new THREE.Mesh(geometry, material);
           mesh.name = 'hexa'
           sphere.add(mesh)
@@ -330,23 +349,23 @@ function createHexagonSphere3D(radius, divisions, tileSize)
     scene.add(sphere)
 
     // Animation Scales 
-    let scales = sphere.children.map( hexa=> hexa.scale)
+    // let scales = sphere.children.map( hexa=> hexa.scale)
 
-    gsap.to(scales, { x: 1.025  ,y: 1.025 , z:1.025 , 
-      stagger: {
-      from: "random",
-      amount: 2.5,
-      each: 1,
-      ease: 'Power3.in',
-      repeat: -1,
-      yoyo: true
-    } }) 
+    // gsap.to(scales, { x: 1.025  ,y: 1.025 , z:1.025 , 
+    //   stagger: {
+    //   from: "random",
+    //   amount: 2.5,
+    //   each: 1,
+    //   ease: 'Power3.in',
+    //   repeat: -1,
+    //   yoyo: true
+    // } }) 
 
 
   
     //  Animation opacity
-    let materialsOpacity = sphere.children.map( hexa=> hexa.material)
-    gsap.to(materialsOpacity, { opacity: 0.4 , duration: 1.25 , ease: "elastic.inOut", stagger: 0.1 , yoyo: true , repeat: -1}) 
+    // let materialsOpacity = sphere.children.map( hexa=> hexa.material)
+    // gsap.to(materialsOpacity, { opacity: 0.4 , duration: 1.25 , ease: "elastic.inOut", stagger: 0.1 , yoyo: true , repeat: -1}) 
 
 
 
@@ -371,4 +390,6 @@ function getRandomInt(min, max) {
 sphere.position.z = -10
 gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
 
-
+sphere.children[17].rotation.z = Math.PI
+sphere.children[12].rotation.y = Math.PI
+// sphere.children[24].rotation.y = -Math.PI
