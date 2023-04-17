@@ -9,8 +9,10 @@ import { Hexasphere } from './hexagon/hexagon';
 
 
 let renderer , camera , control;
-let geometry , material , sphere;
+let geometry , material , sphere, sphere2;
 let meshMaterials;
+let raycaster = new THREE.Raycaster()
+let opacitEffectKey = 0
 export let scene
 const canvasWebGl = document.querySelector('canvas.webgl');
 
@@ -87,7 +89,9 @@ function init()
   pane.addInput(params, 'subdivide', {
     min: 1,
     max: 5,
-    step: 1
+    step: 1,
+    disabled: true, 
+    hidden: true
   }).on('change', removeChangeModel);
   pane.addInput(params, 'tileSize', {
     min: 0,
@@ -172,7 +176,8 @@ LockFrame(60)
 
 const center = new THREE.Vector3(0, 0, 0);
 let angle = 0;
-const radius = 6;
+const radius = 8;
+let HexagonTile;
 function animate()
 {
   requestAnimationFrame(animate)
@@ -184,11 +189,18 @@ function animate()
     then = now - (elapsed % fpsInterval)
     const delta = clock.getDelta();
    
-  
+
+    // Effect Camera Raycaster
+    if(opacitEffectKey == 1) {
+      OpacityRaycasterCameraEffect()
+    }
     // Animation Colors
     // sphere.children[getRandomInt(0, sphere.children.length)].material.color = new THREE.Color(Math.random() * 0xffffff)
-    // sphere.rotation.y += delta * 0.1
-
+    sphere.rotation.y += delta * 0.1
+    angle -= 0.005;
+    const x = center.x + radius * Math.cos(angle);
+    const z = center.z + radius * Math.sin(angle);
+    sphere2.position.set(x, 0 , z);
   
     stats.update()
     control.update()
@@ -199,6 +211,7 @@ function animate()
 
 function createHexagonSphere3D(radius, divisions, tileSize) 
 {
+    opacitEffectKey = 1
     // Calling Hexaspher class
     var hexasphere = new Hexasphere(radius, divisions, tileSize);
     // console.log(hexasphere);
@@ -340,6 +353,7 @@ function createHexagonSphere3D(radius, divisions, tileSize)
 
           // Material
           material = meshMaterials[i]
+          material.opacity = 0.4
         
           var mesh = new THREE.Mesh(geometry, material);
           mesh.name = 'hexa'
@@ -347,6 +361,20 @@ function createHexagonSphere3D(radius, divisions, tileSize)
           hexasphere.tiles[i].mesh = mesh;
     }
     scene.add(sphere)
+
+    // Sphere2 small
+    sphere2 = sphere.clone(true)
+    sphere2.position.x = 8
+    sphere2.scale.set(0.25,0.25,0.25)
+    
+    // sphere2.children.forEach( mesh => {
+    //   mesh.material.transparent = false
+    // })
+    scene.add(sphere2)
+
+
+
+
 
     // Animation Scales 
     // let scales = sphere.children.map( hexa=> hexa.scale)
@@ -366,20 +394,39 @@ function createHexagonSphere3D(radius, divisions, tileSize)
     //  Animation opacity
     // let materialsOpacity = sphere.children.map( hexa=> hexa.material)
     // gsap.to(materialsOpacity, { opacity: 0.4 , duration: 1.25 , ease: "elastic.inOut", stagger: 0.1 , yoyo: true , repeat: -1}) 
-
-
-
-
 };
+
+function OpacityRaycasterCameraEffect() {
+     // Raycaster
+     raycaster.setFromCamera( new THREE.Vector2(), camera );   
+     scene.children.forEach( model => {
+       if(model.type == "Group")
+       {
+         HexagonTile = model
+         model.children.forEach(hexatile => {
+           // hexatile.material.opacity = 0.4
+           // gsap.to( hexatile.material.opacity, {opacity: 0, duration: 1})    
+         })
+       }
+     })
+  
+     var objects = raycaster.intersectObjects(scene.children);
+     if (objects.length>0) {
+         for (var i in objects) {
+           // objects[ i ].object.material.opacity = 1    
+           gsap.to(objects[ i ].object.material, {opacity: 1, duration: 1 })        
+           gsap.to(objects[ i ].object.material, {opacity: 0.4, duration: 1 ,delay: 1})        
+         }
+     } 
+}
+
+
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
-
-
-
 
 
 // Moving Sphere
@@ -390,6 +437,12 @@ function getRandomInt(min, max) {
 sphere.position.z = -10
 gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
 
+// Texture Flip
 sphere.children[17].rotation.z = Math.PI
 sphere.children[12].rotation.y = Math.PI
-// sphere.children[24].rotation.y = -Math.PI
+
+
+// sphere.children[17].material.opacity = 1
+// console.log(sphere.children[0].material);
+
+
