@@ -141,8 +141,8 @@ function init()
 
     // Rotation slope
     // Hexagon
-    if(i == 18 || i == 20 ) { texture.rotation = 1 }
-    if(i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
+    if(i == 18  ) { texture.rotation = 1 }
+    if(i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
     if(i == 6  || i == 39 || i == 41  || i == 27 || i == 30 || i == 13 || i == 22) { texture.rotation = -0.5 }  
     if(i == 16) { texture.rotation = 0.45}  
     if(i == 14) { texture.rotation = -0.75} 
