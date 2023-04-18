@@ -102,5 +102,5 @@ const mesh = new THREE.Points( geometry, material );
 // const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 // const mesh = new THREE.Mesh( geometry, material );
 const axis = new THREE.AxesHelper(5)
-scene.add(axis)
-scene.add(mesh)
+// scene.add(axis)
+// scene.add(mesh)
