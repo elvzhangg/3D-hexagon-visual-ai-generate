@@ -13,6 +13,7 @@ import * as ColorTheif from 'colorthief'
 let renderer , camera , control;
 let geometry , material , sphere, sphere2 , water;
 let meshMaterials;
+let params;
 let raycaster = new THREE.Raycaster()
 let opacitEffectKey = 0
 export let scene
@@ -71,30 +72,38 @@ function init()
   let axis = new THREE.AxesHelper(15)
   // scene.add(axis)
 
-  const params = {
-    radius: 3.5, 
-    subdivide:2, 
-    tileSize: .95,
-    sides: 0
+  params = {
+    sphere1: {
+      radius: 3.5, 
+      subdivide: 3, 
+      tileSize: .95,
+      sides: 0,
+    },
+    sphere2: {
+      radius: 3, 
+      subdivide:2, 
+      tileSize: .95,
+      sides: 0,
+    }
   }
   const pane = new Pane()
   setTimeout(()=> {
     params.sides = sphere.children.length
-    pane.addMonitor(params, 'sides')
+    pane.addMonitor(params.sphere1, 'sides')
   },1)
  
-  pane.addInput(params, 'radius', {
+  pane.addInput(params.sphere1, 'radius', {
     min: 1,
     max: 10
   }).on('change', removeChangeModel);
-  pane.addInput(params, 'subdivide', {
+  pane.addInput(params.sphere1, 'subdivide', {
     min: 1,
     max: 5,
     step: 1,
-    disabled: true, 
-    hidden: true
+    // disabled: true, 
+    // hidden: true
   }).on('change', removeChangeModel);
-  pane.addInput(params, 'tileSize', {
+  pane.addInput(params.sphere1, 'tileSize', {
     min: 0,
     max: 1,
     step: 0.001
@@ -110,8 +119,8 @@ function init()
           scene.remove(element)
           sphere.clear()
         }
-        createHexagonSphere3D(params.radius, params.subdivide, params.tileSize);
-        params.sides = sphere.children.length
+        createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize, sphere);
+        params.sphere1.sides = sphere.children.length
         // console.log(params);
         // console.log(sphere.children.length);
 
@@ -122,68 +131,34 @@ function init()
   //  let light = new THREE.DirectionalLight(0xffffff, 1, 500 );
   //   scene.add( light );
   //   light.position.set(1800,500,1800);
-// ColorTheifg
+
 
   // Texture Image
 
-  let textureLoader = new THREE.TextureLoader();
+  
   meshMaterials = [];
-
-
-
-  for(let i = 1; i < 43; i++){
-
-
-    let texture = textureLoader.load(`00${i}.jpg`)
-    texture.flipY = false
-    texture.center.x = 0.5
-    texture.center.y = 0.5
-
-    // Rotation slope
-    // Hexagon
-    if(i == 18  ) { texture.rotation = 1 }
-    if(i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
-    if(i == 6  || i == 39 || i == 41  || i == 27 || i == 30 || i == 13 || i == 22) { texture.rotation = -0.5 }  
-    if(i == 16) { texture.rotation = 0.45}  
-    if(i == 14) { texture.rotation = -0.75} 
-    if(i == 10) { texture.rotation = -0.65}  
-    if(i == 12) { texture.rotation = -0.1}  
-    if(i == 7)  { texture.rotation = 0.75}  
-    if(i == 9)  { texture.rotation = -0.45}  
-    if(i == 4)  { texture.rotation = 0.2}  
-
-    // Pentagon
-
-    texture.matrixAutoUpdate = true
-    let m = new THREE.MeshBasicMaterial({
-      map:texture,
-      transparent: true,
-    });
-    meshMaterials.push( m );
-  }
 
   sphere = new THREE.Group()
   sphere.name = 'hexagonSphere'
  
+  // Sphere1 Big
+  TextureImageTile(sphere)
+  createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize ,sphere);
   
-  createHexagonSphere3D(params.radius, params.subdivide, params.tileSize);
-  // Detail 1 have 12 sides
-  // Detail 2 have 42 sides
-  // Detail 3 have 92 sides
-
-
-
-  // let box = new THREE.BoxGeometry()
-  // let materialBox = new THREE.MeshBasicMaterial({
-  //   wireframe: true
-  // })
-  // let meshBox = new THREE.Mesh(box, materialBox)
-  // scene.add(meshBox)
-  // console.log(box);
-
-
-
-
+  
+  
+  
+  
+  // Sphere2 small
+  sphere2 = new THREE.Group()
+  sphere2.name = "hexagonSphere2"
+  sphere2.position.x = 5.5
+  TextureImageTile(sphere2)
+  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
+  sphere2.scale.set(0.5,0.5,0.5)
+  sphere2.children.forEach( mesh => {
+    mesh.name = "hexa2"
+  })
 }
 init()
 
@@ -205,7 +180,7 @@ LockFrame(60)
 
 const center = new THREE.Vector3(0, 0, 0);
 let angle = 0;
-const radiusOrbit = 7;
+const radiusOrbit = 6;
 let HexagonTile;
 function animate()
 {
@@ -222,12 +197,16 @@ function animate()
   
     // Animation Colors
     // sphere.children[getRandomInt(0, sphere.children.length)].material.color = new THREE.Color(Math.random() * 0xffffff)
-    sphere.rotation.y += delta * 0.1
-    angle -= 0.005;
-    const x = center.x + radiusOrbit * Math.cos(angle);
-    const z = center.z + radiusOrbit * Math.sin(angle);
-    sphere2.position.set(x, 0 , z);
+    // sphere.rotation.y += delta * 0.1
 
+
+    // Animation Orbit Sceond Sphere2
+    // angle -= 0.005;
+    // const x = center.x + radiusOrbit * Math.cos(angle);
+    // const z = center.z + radiusOrbit * Math.sin(angle);
+    // sphere2.position.set(x, 0 , z);
+
+    // Water Aniamtion
     water.material.uniforms[ 'time' ].value += 0.1 / 60.0;
 
     // sphere.children.forEach( mesh => {
@@ -249,8 +228,10 @@ function animate()
   }
 }
 
-
-function createHexagonSphere3D(radius, divisions, tileSize) 
+// Detail 1 have 12 sides
+// Detail 2 have 42 sides
+// Detail 3 have 92 sides
+function createHexagonSphere3D(radius, divisions, tileSize , objectGroup) 
 {
     opacitEffectKey = 1
     // Calling Hexaspher class
@@ -387,10 +368,10 @@ function createHexagonSphere3D(radius, divisions, tileSize)
 
           var mesh = new THREE.Mesh(geometry, material);
           mesh.name = 'hexa'
-          sphere.add(mesh)
+          objectGroup.add(mesh)
           hexasphere.tiles[i].mesh = mesh;
     }
-    scene.add(sphere)
+    scene.add(objectGroup)
 
 
 
@@ -413,18 +394,6 @@ function createHexagonSphere3D(radius, divisions, tileSize)
     // let materialsOpacity = sphere.children.map( hexa=> hexa.material)
     // gsap.to(materialsOpacity, { opacity: 0.4 , duration: 1.25 , ease: "elastic.inOut", stagger: 0.1 , yoyo: true , repeat: -1}) 
 };
-
- // Sphere2 small
-  sphere2 = new THREE.Group().copy(sphere)
-  sphere2.name = "hexagonSphere2"
-  sphere2.position.x = 8
-  sphere2.scale.set(0.25,0.25,0.25)
-  sphere2.children.forEach( mesh => {
-    mesh.name = "hexa2"
-    // mesh.material.transparent = false
-  })
-
-  scene.add(sphere2)
 
 
 
@@ -501,3 +470,44 @@ const createReflector = () => {
   return water;
 }
 scene.add(createReflector())
+
+
+
+function TextureImageTile(objectGroup) {
+  let textureLoader = new THREE.TextureLoader();
+ 
+  let sphereCount = objectGroup.name.slice(-1) == 'e' ? 1 : 2
+  let loopSubdivision = sphereCount == 1 ? 93 : 43
+
+
+  // Start : 44
+  for(let i = 1; i < loopSubdivision ; i++) {
+    let texture = textureLoader.load(`/sphere${sphereCount}/00${i}.jpg`)
+    texture.flipY = false
+    texture.center.x = 0.5
+    texture.center.y = 0.5
+
+    // Rotation slope
+    // Hexagon
+    if(i == 18  ) { texture.rotation = 1 }
+    if(i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
+    if(i == 6  || i == 39 || i == 41  || i == 27 || i == 30 || i == 13 || i == 22) { texture.rotation = -0.5 }  
+    if(i == 16) { texture.rotation = 0.45}  
+    if(i == 14) { texture.rotation = -0.75} 
+    if(i == 10) { texture.rotation = -0.65}  
+    if(i == 12) { texture.rotation = -0.1}  
+    if(i == 7)  { texture.rotation = 0.75}  
+    if(i == 9)  { texture.rotation = -0.45}  
+    if(i == 4)  { texture.rotation = 0.2}  
+
+    // Pentagon
+
+    texture.matrixAutoUpdate = true
+    let m = new THREE.MeshBasicMaterial({
+      map:texture,
+      transparent: true,
+    });
+    meshMaterials.push( m );
+  }
+
+}
