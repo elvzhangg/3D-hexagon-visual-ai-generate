@@ -15,10 +15,11 @@ let geometry , material , sphere, sphere2 , water;
 let meshMaterials;
 let params;
 let raycaster = new THREE.Raycaster()
+
 let opacitEffectKey = 0
 export let scene
 const canvasWebGl = document.querySelector('canvas.webgl');
-
+let pane; 
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
@@ -33,6 +34,27 @@ document.body.appendChild(stats.dom)
 
 
 const textureWater = 'https://images.unsplash.com/photo-1579896052301-52bed413bc80?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80';
+const manager = new THREE.LoadingManager();
+let textureLoader = new THREE.TextureLoader(manager);
+
+let percentage;
+manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+
+  percentage = (itemsLoaded / itemsTotal) * 100
+  document.querySelector('.loading').innerHTML = `${percentage.toFixed(1)}%`
+  console.log( document.querySelector('.loading').innerText );
+ 
+};  
+
+manager.onLoad = function ( ) {
+
+  // document.querySelector('.loading').style.opacity = percentage
+  gsap.to('.loading', { opacity: 0 , display: 'none'})
+  gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+};
+
+
+
 
 function init()
 {
@@ -86,44 +108,87 @@ function init()
       sides: 0,
     }
   }
-  const pane = new Pane()
+  pane = new Pane({
+    title: 'Setting Parameters',
+    
+  })
+
+
+  // Sphere1
+  let Folder1 = pane.addFolder({
+    title: "Sphere1"
+  })
+
   setTimeout(()=> {
-    params.sides = sphere.children.length
-    pane.addMonitor(params.sphere1, 'sides')
-  },1)
+    params.sphere1.sides = sphere.children.length
+    Folder1.addMonitor(params.sphere1, 'sides')
+  }, 1)
  
-  pane.addInput(params.sphere1, 'radius', {
+  Folder1.addInput(params.sphere1, 'radius', {
     min: 1,
     max: 10
-  }).on('change', removeChangeModel);
-  pane.addInput(params.sphere1, 'subdivide', {
+  }).on('change', () => removeChangeModel(sphere));
+  Folder1.addInput(params.sphere1, 'subdivide', {
     min: 1,
     max: 5,
     step: 1,
-    // disabled: true, 
-    // hidden: true
-  }).on('change', removeChangeModel);
-  pane.addInput(params.sphere1, 'tileSize', {
+    disabled: true, 
+    hidden: true
+  }).on('change', () => removeChangeModel(sphere));
+  Folder1.addInput(params.sphere1, 'tileSize', {
     min: 0,
     max: 1,
     step: 0.001
-  }).on('change', removeChangeModel);
-  
-  
-  function removeChangeModel()
+  }).on('change', () => removeChangeModel(sphere));
+
+
+   // Sphere2
+   let Folder2 = pane.addFolder({
+    title: "Sphere2"
+  })
+
+  setTimeout(()=> {
+    params.sphere2.sides = sphere2.children.length
+    Folder2.addMonitor(params.sphere2, 'sides')
+  }, 1)
+ 
+  Folder2.addInput(params.sphere2, 'radius', {
+    min: 1,
+    max: 10
+  }).on('change', () => removeChangeModel(sphere2));
+  Folder2.addInput(params.sphere2, 'subdivide', {
+    min: 1,
+    max: 5,
+    step: 1,
+    disabled: true, 
+    hidden: true
+  }).on('change', () => removeChangeModel(sphere2));
+  Folder2.addInput(params.sphere2, 'tileSize', {
+    min: 0,
+    max: 1,
+    step: 0.001
+  }).on('change', () => removeChangeModel(sphere2));
+
+
+
+
+  function removeChangeModel(objectGroup)
   {
     scene.children.forEach(element => 
-    {   
-        if(element.name == 'hexagonSphere'){
-  
+      {   
+        if(element.name == 'hexagonSphere' && element.name == objectGroup.name){  
           scene.remove(element)
           sphere.clear()
+          createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize, sphere);
+          params.sphere1.sides = sphere.children.length
         }
-        createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize, sphere);
-        params.sphere1.sides = sphere.children.length
-        // console.log(params);
-        // console.log(sphere.children.length);
 
+        if(element.name == 'hexagonSphere2' && element.name == objectGroup.name){  
+          scene.remove(element)
+          sphere2.clear()
+          createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize, sphere2);
+          params.sphere2.sides = sphere2.children.length
+        }
       });
   }
 
@@ -136,16 +201,12 @@ function init()
   // Texture Image
 
   
-  meshMaterials = [];
 
   sphere = new THREE.Group()
   sphere.name = 'hexagonSphere'
  
   // Sphere1 Big
-  TextureImageTile(sphere)
   createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize ,sphere);
-  
-  
   
   
   
@@ -153,7 +214,7 @@ function init()
   sphere2 = new THREE.Group()
   sphere2.name = "hexagonSphere2"
   sphere2.position.x = 5.5
-  TextureImageTile(sphere2)
+
   createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
   sphere2.scale.set(0.5,0.5,0.5)
   sphere2.children.forEach( mesh => {
@@ -236,6 +297,7 @@ function createHexagonSphere3D(radius, divisions, tileSize , objectGroup)
     opacitEffectKey = 1
     // Calling Hexaspher class
     var hexasphere = new Hexasphere(radius, divisions, tileSize);
+    TextureImageTile(objectGroup)
     // console.log(hexasphere);
 
     // for(var i = 0; i< 3; i++)
@@ -442,7 +504,7 @@ function getRandomInt(min, max) {
  
 // Animation Group transion
 sphere.position.z = -10
-gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+
 
 // Texture Flip
 // sphere.children[17].rotation.z = Math.PI
@@ -473,12 +535,11 @@ scene.add(createReflector())
 
 
 
+
 function TextureImageTile(objectGroup) {
-  let textureLoader = new THREE.TextureLoader();
- 
+  meshMaterials = [];
   let sphereCount = objectGroup.name.slice(-1) == 'e' ? 1 : 2
   let loopSubdivision = sphereCount == 1 ? 93 : 43
-
 
   // Start : 44
   for(let i = 1; i < loopSubdivision ; i++) {
@@ -487,20 +548,41 @@ function TextureImageTile(objectGroup) {
     texture.center.x = 0.5
     texture.center.y = 0.5
 
+    // Sphere1
     // Rotation slope
     // Hexagon
-    if(i == 18  ) { texture.rotation = 1 }
-    if(i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
-    if(i == 6  || i == 39 || i == 41  || i == 27 || i == 30 || i == 13 || i == 22) { texture.rotation = -0.5 }  
-    if(i == 16) { texture.rotation = 0.45}  
-    if(i == 14) { texture.rotation = -0.75} 
-    if(i == 10) { texture.rotation = -0.65}  
-    if(i == 12) { texture.rotation = -0.1}  
-    if(i == 7)  { texture.rotation = 0.75}  
-    if(i == 9)  { texture.rotation = -0.45}  
-    if(i == 4)  { texture.rotation = 0.2}  
 
+    // Tomorrow : Arrang Color
+    if(sphereCount == 1) {
+      if(i == 56 || i == 25 || i == 55 || i == 1  || i == 51 || i == 80 || i == 81 || i == 26 || i == 65 || i == 32 || i == 47 || i == 85 || i == 90 || i == 84 || i == 91 || i == 54 ) { texture.rotation = -0.5 }
+      if(i == 64 || i == 7  || i == 77 || i == 24 || i == 69 || i == 31 || i == 35 || i == 30 || i == 20 || i == 87 || i == 67 || i == 76 || i == 11 || i == 53 || i == 83 || i == 63 || i == 5  || i == 8  || i == 89 || i == 82 || i == 52 || i == 68 || i == 23 || i == 22 || i == 16 || i == 15 || i == 17 || i == 61 ) { texture.rotation = 0.5 }
+      if(i == 48 ) { texture.rotation = -0.25 }
+      if(i == 88 ) { texture.rotation =  0.25 }
+      if(i == 79 || i == 78 || i == 10  ) { texture.rotation = -0.75 }
+      if(i == 60 || i == 21 ) { texture.rotation = 0.75 }
+      if(i == 37) { texture.rotation = -1}
+    }
+
+    // Sphere2
+    // Rotation slope
+    // Hexagon
+    if(sphereCount == 2) {
+      if(i == 18  ) { texture.rotation = 1 }
+      if(i == 8  || i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
+      if(i == 10 || i == 6  || i == 39 || i == 41 || i == 30 || i == 13 ) { texture.rotation = -0.5 }  
+      if(i == 16) { texture.rotation = 0.45}  
+      if(i == 14) { texture.rotation = -0.75} 
+      if(i == 10) { texture.rotation = -0.65}  
+      if(i == 12) { texture.rotation = -0.1}  
+      if(i == 7)  { texture.rotation = 0.75}  
+      if(i == 9)  { texture.rotation = -0.45}  
+      if(i == 4)  { texture.rotation = 0.2}  
+      // if(i == 8)  { texture.rotation = 0.5}  
+    }
+
+  
     // Pentagon
+
 
     texture.matrixAutoUpdate = true
     let m = new THREE.MeshBasicMaterial({
