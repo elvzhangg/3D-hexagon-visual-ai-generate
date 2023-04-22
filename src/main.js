@@ -11,7 +11,7 @@ import * as ColorTheif from 'colorthief'
 
 
 let renderer , camera , control;
-let geometry , material , sphere, sphere2 , water;
+let geometry , material , sphere, sphere2 , sphere3 , water;
 let meshMaterials;
 let params;
 let raycaster = new THREE.Raycaster()
@@ -53,6 +53,7 @@ manager.onLoad = function ( ) {
       isRotateSphere = true
   }})
   gsap.to(sphere2.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+  gsap.to(sphere3.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
 };
 
 
@@ -108,17 +109,23 @@ function init()
       subdivide:2, 
       tileSize: .95,
       sides: 0,
+    },
+    sphere3: {
+      radius: 3, 
+      subdivide:2, 
+      tileSize: .95,
+      sides: 0,
     }
   }
   pane = new Pane({
     title: 'Setting Parameters',
-    
+    expanded:  false
   })
 
 
   // Sphere1
   let Folder1 = pane.addFolder({
-    title: "Sphere1"
+    title: "Sphere1",
   })
 
   setTimeout(()=> {
@@ -172,6 +179,33 @@ function init()
   }).on('change', () => removeChangeModel(sphere2));
 
 
+  // Sphere2
+  let Folder3 = pane.addFolder({
+    title: "Sphere3"
+  })
+
+  setTimeout(()=> {
+    params.sphere3.sides = sphere3.children.length
+    Folder3.addMonitor(params.sphere3, 'sides')
+  }, 1)
+
+  Folder3.addInput(params.sphere3, 'radius', {
+    min: 1,
+    max: 10
+  }).on('change', () => removeChangeModel(sphere3));
+  Folder3.addInput(params.sphere3, 'subdivide', {
+    min: 1,
+    max: 5,
+    step: 1,
+    disabled: true, 
+    hidden: true
+  }).on('change', () => removeChangeModel(sphere3));
+  Folder3.addInput(params.sphere3, 'tileSize', {
+    min: 0,
+    max: 1,
+    step: 0.001
+  }).on('change', () => removeChangeModel(sphere3));
+
 
 
   function removeChangeModel(objectGroup)
@@ -190,6 +224,13 @@ function init()
           sphere2.clear()
           createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize, sphere2);
           params.sphere2.sides = sphere2.children.length
+        }
+
+        if(element.name == 'hexagonSphere3' && element.name == objectGroup.name){  
+          scene.remove(element)
+          sphere3.clear()
+          createHexagonSphere3D(params.sphere3.radius, params.sphere3.subdivide, params.sphere3.tileSize, sphere3);
+          params.sphere3.sides = sphere3.children.length
         }
       });
   }
@@ -230,10 +271,9 @@ function init()
   // Sphere2 small
   sphere2 = new THREE.Group()
   sphere2.name = "hexagonSphere2"
-  sphere.name = 'hexagonSphere'
   sphere2.position.y = 2.5
   sphere2.position.z = -30
-  sphere2.position.x = 6.5
+  sphere2.position.x = 6.0
 
   createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
   sphere2.scale.set(0.5,0.5,0.5)
@@ -241,62 +281,19 @@ function init()
     mesh.name = "hexa2"
   })
 
-  function mathRandom(num = 1) {
-    var setNumber = - Math.random() * num + Math.random() * num;
-    return setNumber;
-  }
 
+  // Sphere3 small
+  sphere3 = new THREE.Group()
+  sphere3.name = "hexagonSphere3"
+  sphere3.position.y = 2.5
+  sphere3.position.z = -30
+  sphere3.position.x = -6.0
 
-
-  // var sceneGruop = new THREE.Object3D();
-  // particularGruop = new THREE.Object3D();
-  // modularGruop = new THREE.Object3D();
-  
-  // function generateParticle(num, amp = 2) {
-  //   var gmaterial = new THREE.MeshPhysicalMaterial({color:0xFFFFFF, side:THREE.DoubleSide});
-  
-  //   var gparticular = new THREE.CircleGeometry(0.2,5);
-  
-  //   for (var i = 1; i < num; i++) {
-  //     var pscale = 0.001+Math.abs(mathRandom(0.03));
-  //     var particular = new THREE.Mesh(gparticular, gmaterial);
-  //     particular.position.set(mathRandom(amp),mathRandom(amp),mathRandom(amp));
-  //     particular.rotation.set(mathRandom(),mathRandom(),mathRandom());
-  //     particular.scale.set(pscale,pscale,pscale);
-  //     particular.speedValue = mathRandom(1);
-  
-  //     particularGruop.add(particular);
-  //   }
-  // }
-  // generateParticle(200, 2);
-  
-  // sceneGruop.add(particularGruop);
-  // scene.add(modularGruop);
-  // scene.add(sceneGruop);
-
-  // for (var i = 0; i<50; i++) {
-  //   var geometry = new THREE.IcosahedronGeometry(1);
-  //   var material = new THREE.MeshStandardMaterial({color:0x111111});
-  //   var cube = new THREE.Mesh(geometry, material);
-  //   cube.speedRotation = Math.random() * 0.1;
-  //   cube.positionX = (mathRandom()* 10);
-  //   cube.positionY = (mathRandom()* 10);
-  //   cube.positionZ = (mathRandom()* 10);
-  //   cube.castShadow = true;
-  //   cube.receiveShadow = true;
-    
-  //   var newScaleValue = mathRandom(0.3);
-    
-  //   cube.scale.set(newScaleValue,newScaleValue,newScaleValue);
-  //   //---
-  //   cube.rotation.x = mathRandom(180 * Math.PI / 180);
-  //   cube.rotation.y = mathRandom(180 * Math.PI / 180);
-  //   cube.rotation.z = mathRandom(180 * Math.PI / 180);
-  //   //
-  //   cube.position.set(cube.positionX, cube.positionY, cube.positionZ);
-  //   modularGruop.add(cube);
-  // }
-
+  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere3)
+  sphere3.scale.set(0.5,0.5,0.5)
+  sphere3.children.forEach( mesh => {
+    mesh.name = "hexa3"
+  })
 
 
   
@@ -580,12 +577,6 @@ function OpacityRaycasterCameraEffect() {
 
 
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-}
-
 
 
 
@@ -694,27 +685,18 @@ function sphereRotationMove(time) {
   sphere2.rotation.y += 0.0005;
   sphere2.rotation.z += 0.0005;
 
-  sphere2.position.x =  Math.sin(sphere2.rotation.x * 10) + 6.5
+  sphere2.position.x =  Math.sin(sphere2.rotation.x * 10) + 6.0
   sphere2.position.y =  Math.cos(sphere2.rotation.x * 10) + 1.5
-  sphere2.position.z = -Math.sin(sphere2.rotation.x * 10) + 0
+  sphere2.position.z =  Math.sin(sphere2.rotation.x * 10) * 2.5
 
 
+  sphere3.rotation.x += 0.0005;
+  sphere3.rotation.y += 0.0005;
+  sphere3.rotation.z += 0.0005;
 
-  // for (var i = 0, l = modularGruop.children.length; i<l; i++) {
-  //   var newCubes = modularGruop.children[i];
-  //   newCubes.rotation.x += 0.008;
-  //   newCubes.rotation.y += 0.005;
-  //   newCubes.rotation.z += 0.003;
-  //   //---
-  //   newCubes.position.x = Math.sin(time * newCubes.positionZ * 0.45) * newCubes.positionY ;
-  //   newCubes.position.y = Math.cos(time * newCubes.positionX * 0.45) * newCubes.positionZ ;
-  //   newCubes.position.z = Math.sin(time * newCubes.positionY * 0.45) * newCubes.positionX ;
-  // }
-
-  //   particularGruop.rotation.y += 0.005;
-  //---
-  // modularGruop.rotation.y -= ((mouse.x * 4) + modularGruop.rotation.y) * uSpeed;
-  // modularGruop.rotation.x -= ((-mouse.y * 4) + modularGruop.rotation.x) * uSpeed;
+  sphere3.position.x = -Math.sin(sphere3.rotation.x * 10) - 6.0
+  sphere3.position.y =  Math.cos(sphere3.rotation.x * 10) + 1.5
+  sphere3.position.z = -Math.sin(sphere3.rotation.x * 10) * 2.5
 
 
 }
