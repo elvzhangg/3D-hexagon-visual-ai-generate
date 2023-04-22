@@ -15,6 +15,7 @@ let geometry , material , sphere, sphere2 , sphere3 , water;
 let meshMaterials;
 let params;
 let raycaster = new THREE.Raycaster()
+const pointer = new THREE.Vector2();
 let particularGruop
 let modularGruop
 let isRotateSphere = false
@@ -338,7 +339,7 @@ function animate()
       sphereRotationMove(time)
     }
  
-    
+
 
 
     
@@ -364,6 +365,10 @@ function animate()
     if(opacitEffectKey == 1) {
       OpacityRaycasterCameraEffect()
     }
+
+
+
+
 
 
     // console.log(scene.children);
@@ -714,3 +719,44 @@ function sphereRotationMove(time) {
 
 
 }
+
+
+
+function onPointerMove( event ) {
+
+	// calculate pointer position in normalized device coordinates
+	// (-1 to +1) for both components
+
+	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
+    raycaster.setFromCamera( pointer, camera );
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObjects( scene.children );
+    let prevObject =  null
+    for ( let i = 0; i < intersects.length; i ++ ) {
+      
+      if(intersects[ i ].object.position.z == 1) 
+      {
+        gsap.to(intersects[ i ].object.position , { z: 0})
+      } else 
+      {
+        if(intersects[ i ].object.material.opacity == 1) 
+        {
+
+          gsap.to(intersects[ i ].object.position , { z: 1})
+
+        }
+
+      }
+
+
+    }
+
+
+}
+
+
+
+window.addEventListener( 'click', onPointerMove );
