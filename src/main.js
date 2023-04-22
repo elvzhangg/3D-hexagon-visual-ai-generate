@@ -15,7 +15,9 @@ let geometry , material , sphere, sphere2 , water;
 let meshMaterials;
 let params;
 let raycaster = new THREE.Raycaster()
-
+let particularGruop
+let modularGruop
+let isRotateSphere = false
 let opacitEffectKey = 0
 export let scene
 const canvasWebGl = document.querySelector('canvas.webgl');
@@ -42,15 +44,17 @@ manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
 
   percentage = (itemsLoaded / itemsTotal) * 100
   document.querySelector('.loading').innerHTML = `${percentage.toFixed(1)}%`
-  console.log( document.querySelector('.loading').innerText );
- 
+  // console.log( document.querySelector('.loading').innerText );
 };  
 
 manager.onLoad = function ( ) {
 
   // document.querySelector('.loading').style.opacity = percentage
-  gsap.to('.loading', { opacity: 0 , display: 'none'})
-  gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+  gsap.to('.loading', { opacity: 0 , display: 'none' })
+  gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)" , onComplete: () => {
+      isRotateSphere = true
+  }})
+  gsap.to(sphere2.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
 };
 
 
@@ -71,7 +75,7 @@ function init()
 
 
   camera = new THREE.PerspectiveCamera(45 , sizes.width / sizes.height , 0.1 , 3000 )
-  camera.position.z = 14
+  camera.position.z = 15
   scene.add(camera)
 
   
@@ -194,17 +198,32 @@ function init()
 
 
   //  let light = new THREE.DirectionalLight(0xffffff, 1, 500 );
-  //   scene.add( light );
+
   //   light.position.set(1800,500,1800);
 
 
+    var light = new THREE.SpotLight(0xFFFFFF, 3);
+    light.position.set(5, 5, 2);
+    light.castShadow = true;
+    light.shadow.mapSize.width = 10000;
+    light.shadow.mapSize.height = light.shadow.mapSize.width;
+    light.penumbra = 0.5;
+    scene.add( light );
+
+    var lightBack = new THREE.PointLight(0x0FFFFF, 1);
+    lightBack.position.set(0, -3, -1);
+    scene.add(lightBack);
+
+
   // Texture Image
+  
 
   
 
   sphere = new THREE.Group()
   sphere.name = 'hexagonSphere'
- 
+  sphere.position.y = 0.5
+  sphere.position.z = -30
   // Sphere1 Big
   createHexagonSphere3D(params.sphere1.radius, params.sphere1.subdivide, params.sphere1.tileSize ,sphere);
   
@@ -213,6 +232,9 @@ function init()
   // Sphere2 small
   sphere2 = new THREE.Group()
   sphere2.name = "hexagonSphere2"
+  sphere.name = 'hexagonSphere'
+  sphere2.position.y = 2.5
+  sphere2.position.z = -30
   sphere2.position.x = 5.5
 
   createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
@@ -220,6 +242,66 @@ function init()
   sphere2.children.forEach( mesh => {
     mesh.name = "hexa2"
   })
+
+  function mathRandom(num = 1) {
+    var setNumber = - Math.random() * num + Math.random() * num;
+    return setNumber;
+  }
+
+
+
+  // var sceneGruop = new THREE.Object3D();
+  // particularGruop = new THREE.Object3D();
+  // modularGruop = new THREE.Object3D();
+  
+  // function generateParticle(num, amp = 2) {
+  //   var gmaterial = new THREE.MeshPhysicalMaterial({color:0xFFFFFF, side:THREE.DoubleSide});
+  
+  //   var gparticular = new THREE.CircleGeometry(0.2,5);
+  
+  //   for (var i = 1; i < num; i++) {
+  //     var pscale = 0.001+Math.abs(mathRandom(0.03));
+  //     var particular = new THREE.Mesh(gparticular, gmaterial);
+  //     particular.position.set(mathRandom(amp),mathRandom(amp),mathRandom(amp));
+  //     particular.rotation.set(mathRandom(),mathRandom(),mathRandom());
+  //     particular.scale.set(pscale,pscale,pscale);
+  //     particular.speedValue = mathRandom(1);
+  
+  //     particularGruop.add(particular);
+  //   }
+  // }
+  // generateParticle(200, 2);
+  
+  // sceneGruop.add(particularGruop);
+  // scene.add(modularGruop);
+  // scene.add(sceneGruop);
+
+  // for (var i = 0; i<50; i++) {
+  //   var geometry = new THREE.IcosahedronGeometry(1);
+  //   var material = new THREE.MeshStandardMaterial({color:0x111111});
+  //   var cube = new THREE.Mesh(geometry, material);
+  //   cube.speedRotation = Math.random() * 0.1;
+  //   cube.positionX = (mathRandom()* 10);
+  //   cube.positionY = (mathRandom()* 10);
+  //   cube.positionZ = (mathRandom()* 10);
+  //   cube.castShadow = true;
+  //   cube.receiveShadow = true;
+    
+  //   var newScaleValue = mathRandom(0.3);
+    
+  //   cube.scale.set(newScaleValue,newScaleValue,newScaleValue);
+  //   //---
+  //   cube.rotation.x = mathRandom(180 * Math.PI / 180);
+  //   cube.rotation.y = mathRandom(180 * Math.PI / 180);
+  //   cube.rotation.z = mathRandom(180 * Math.PI / 180);
+  //   //
+  //   cube.position.set(cube.positionX, cube.positionY, cube.positionZ);
+  //   modularGruop.add(cube);
+  // }
+
+
+
+  
 }
 init()
 
@@ -253,9 +335,18 @@ function animate()
   {
     then = now - (elapsed % fpsInterval)
     const delta = clock.getDelta();
-   
+    var time = performance.now() * 0.0003;
 
-  
+
+    //---
+    if(isRotateSphere) {
+      sphereRotationMove(time)
+    }
+ 
+    
+
+
+    
     // Animation Colors
     // sphere.children[getRandomInt(0, sphere.children.length)].material.color = new THREE.Color(Math.random() * 0xffffff)
     // sphere.rotation.y += delta * 0.1
@@ -498,12 +589,7 @@ function getRandomInt(min, max) {
 }
 
 
-// Moving Sphere
 
-/** Animation */
- 
-// Animation Group transion
-sphere.position.z = -10
 
 
 // Texture Flip
@@ -591,5 +677,46 @@ function TextureImageTile(objectGroup) {
     });
     meshMaterials.push( m );
   }
+
+}
+
+
+
+function sphereRotationMove(time) {
+  sphere.rotation.x += 0.0005;
+  sphere.rotation.y += 0.0005;
+  sphere.rotation.z += 0.0005;
+  
+  sphere.position.x = -Math.sin(sphere.rotation.x * 10) + 0
+  sphere.position.y = -Math.cos(sphere.rotation.x * 10) + 1.5
+  sphere.position.z =  Math.sin(sphere.rotation.x * 10) + 0
+
+
+  sphere2.rotation.x += 0.0005;
+  sphere2.rotation.y += 0.0005;
+  sphere2.rotation.z += 0.0005;
+
+  sphere2.position.x = -Math.sin(sphere2.rotation.x * 10) + 5.5
+  sphere2.position.y =  Math.cos(sphere2.rotation.x * 10) + 1.5
+  sphere2.position.z = -Math.sin(sphere2.rotation.x * 10) + 0
+
+
+
+  // for (var i = 0, l = modularGruop.children.length; i<l; i++) {
+  //   var newCubes = modularGruop.children[i];
+  //   newCubes.rotation.x += 0.008;
+  //   newCubes.rotation.y += 0.005;
+  //   newCubes.rotation.z += 0.003;
+  //   //---
+  //   newCubes.position.x = Math.sin(time * newCubes.positionZ * 0.45) * newCubes.positionY ;
+  //   newCubes.position.y = Math.cos(time * newCubes.positionX * 0.45) * newCubes.positionZ ;
+  //   newCubes.position.z = Math.sin(time * newCubes.positionY * 0.45) * newCubes.positionX ;
+  // }
+
+  //   particularGruop.rotation.y += 0.005;
+  //---
+  // modularGruop.rotation.y -= ((mouse.x * 4) + modularGruop.rotation.y) * uSpeed;
+  // modularGruop.rotation.x -= ((-mouse.y * 4) + modularGruop.rotation.x) * uSpeed;
+
 
 }
