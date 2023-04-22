@@ -41,10 +41,8 @@ let textureLoader = new THREE.TextureLoader(manager);
 
 let percentage;
 manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-
   percentage = (itemsLoaded / itemsTotal) * 100
   document.querySelector('.loading').innerHTML = `${percentage.toFixed(1)}%`
-  // console.log( document.querySelector('.loading').innerText );
 };  
 
 manager.onLoad = function ( ) {
@@ -235,7 +233,7 @@ function init()
   sphere.name = 'hexagonSphere'
   sphere2.position.y = 2.5
   sphere2.position.z = -30
-  sphere2.position.x = 5.5
+  sphere2.position.x = 6.5
 
   createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
   sphere2.scale.set(0.5,0.5,0.5)
@@ -683,20 +681,20 @@ function TextureImageTile(objectGroup) {
 
 
 function sphereRotationMove(time) {
-  sphere.rotation.x += 0.0005;
-  sphere.rotation.y += 0.0005;
-  sphere.rotation.z += 0.0005;
+  // sphere.rotation.x += 0.0005;
+  // sphere.rotation.y += 0.0005;
+  // sphere.rotation.z += 0.0005;
   
-  sphere.position.x = -Math.sin(sphere.rotation.x * 10) + 0
-  sphere.position.y = -Math.cos(sphere.rotation.x * 10) + 1.5
-  sphere.position.z =  Math.sin(sphere.rotation.x * 10) + 0
+  // sphere.position.x = -Math.sin(sphere.rotation.x * 10) + 0
+  // sphere.position.y = -Math.cos(sphere.rotation.x * 10) + 1.5
+  // sphere.position.z =  Math.sin(sphere.rotation.x * 10) + 0
 
 
   sphere2.rotation.x += 0.0005;
   sphere2.rotation.y += 0.0005;
   sphere2.rotation.z += 0.0005;
 
-  sphere2.position.x = -Math.sin(sphere2.rotation.x * 10) + 5.5
+  sphere2.position.x =  Math.sin(sphere2.rotation.x * 10) + 6.5
   sphere2.position.y =  Math.cos(sphere2.rotation.x * 10) + 1.5
   sphere2.position.z = -Math.sin(sphere2.rotation.x * 10) + 0
 
