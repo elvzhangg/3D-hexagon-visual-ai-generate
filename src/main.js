@@ -613,7 +613,8 @@ scene.add(createReflector())
 
 function TextureImageTile(objectGroup) {
   meshMaterials = [];
-  let sphereCount = objectGroup.name.slice(-1) == 'e' ? 1 : 2
+  let sphereCount = objectGroup.name.slice(-1); 
+  if(objectGroup.name.slice(-1) == 'e') { sphereCount =  1 }
   let loopSubdivision = sphereCount == 1 ? 93 : 43
 
   // Start : 44
@@ -655,6 +656,23 @@ function TextureImageTile(objectGroup) {
       // if(i == 8)  { texture.rotation = 0.5}  
     }
 
+    // Sphere3
+    // Rotation slope
+    // Hexagon
+    if(sphereCount == 3 ) {
+      if(i == 18  ) { texture.rotation = 1 }
+      if(i == 8  || i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
+      if(i == 10 || i == 39 || i == 41 || i == 30 || i == 13 ) { texture.rotation = -0.5 }  
+      if(i == 16) { texture.rotation = 0.45}  
+      if(i == 14) { texture.rotation = -0.75} 
+      if(i == 10) { texture.rotation = -0.65}  
+      if(i == 12) { texture.rotation = -0.1}  
+      if(i == 7)  { texture.rotation = 0.75}  
+      if(i == 9)  { texture.rotation = -0.45}  
+      if(i == 4)  { texture.rotation = 0.2}  
+      if(i == 21 || i == 6  )  { texture.rotation = -0.25}  
+    }
+
   
     // Pentagon
 
@@ -682,8 +700,6 @@ function sphereRotationMove(time) {
 
 
   sphere2.rotation.x += 0.0005;
-  sphere2.rotation.y += 0.0005;
-  sphere2.rotation.z += 0.0005;
 
   sphere2.position.x =  Math.sin(sphere2.rotation.x * 10) + 6.0
   sphere2.position.y =  Math.cos(sphere2.rotation.x * 10) + 1.5
@@ -691,8 +707,6 @@ function sphereRotationMove(time) {
 
 
   sphere3.rotation.x += 0.0005;
-  sphere3.rotation.y += 0.0005;
-  sphere3.rotation.z += 0.0005;
 
   sphere3.position.x = -Math.sin(sphere3.rotation.x * 10) - 6.0
   sphere3.position.y =  Math.cos(sphere3.rotation.x * 10) + 1.5
