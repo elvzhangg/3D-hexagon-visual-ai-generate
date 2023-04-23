@@ -7,7 +7,6 @@ import gsap from 'gsap'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Hexasphere } from './hexagon/hexagon';
 import { Water } from 'three/examples/jsm/objects/Water'
-import * as ColorTheif from 'colorthief'
 
 
 let renderer , camera , control;
@@ -269,32 +268,32 @@ function init()
   
   
   
-  // Sphere2 small
-  sphere2 = new THREE.Group()
-  sphere2.name = "hexagonSphere2"
-  sphere2.position.y = 2.5
-  sphere2.position.z = -30
-  sphere2.position.x = 6.0
+  // // Sphere2 small
+  // sphere2 = new THREE.Group()
+  // sphere2.name = "hexagonSphere2"
+  // sphere2.position.y = 2.5
+  // sphere2.position.z = -30
+  // sphere2.position.x = 6.0
 
-  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
-  sphere2.scale.set(0.5,0.5,0.5)
-  sphere2.children.forEach( mesh => {
-    mesh.name = "hexa2"
-  })
+  // createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
+  // sphere2.scale.set(0.5,0.5,0.5)
+  // sphere2.children.forEach( mesh => {
+  //   mesh.name = "hexa2"
+  // })
 
 
-  // Sphere3 small
-  sphere3 = new THREE.Group()
-  sphere3.name = "hexagonSphere3"
-  sphere3.position.y = 2.5
-  sphere3.position.z = -30
-  sphere3.position.x = -6.0
+  // // Sphere3 small
+  // sphere3 = new THREE.Group()
+  // sphere3.name = "hexagonSphere3"
+  // sphere3.position.y = 2.5
+  // sphere3.position.z = -30
+  // sphere3.position.x = -6.0
 
-  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere3)
-  sphere3.scale.set(0.5,0.5,0.5)
-  sphere3.children.forEach( mesh => {
-    mesh.name = "hexa3"
-  })
+  // createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere3)
+  // sphere3.scale.set(0.5,0.5,0.5)
+  // sphere3.children.forEach( mesh => {
+  //   mesh.name = "hexa3"
+  // })
 
 
   
@@ -335,9 +334,9 @@ function animate()
 
 
     //---
-    if(isRotateSphere) {
-      sphereRotationMove(time)
-    }
+    // if(isRotateSphere) {
+    //   sphereRotationMove(time)
+    // }
  
 
 
@@ -624,7 +623,7 @@ function TextureImageTile(objectGroup) {
 
   // Start : 44
   for(let i = 1; i < loopSubdivision ; i++) {
-    let texture = textureLoader.load(`/sphere${sphereCount}/00${i}.jpg`)
+    let texture = textureLoader.load(`/sphere${sphereCount}/new/00${i}.jpg`)
     texture.flipY = false
     texture.center.x = 0.5
     texture.center.y = 0.5

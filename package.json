@@ -12,7 +12,6 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
-    "colorthief": "^2.4.0",
     "gsap": "^3.11.3",
     "three": "^0.145.0",
     "tweakpane": "^3.1.0",
