@@ -268,32 +268,32 @@ function init()
   
   
   
-  // // Sphere2 small
-  // sphere2 = new THREE.Group()
-  // sphere2.name = "hexagonSphere2"
-  // sphere2.position.y = 2.5
-  // sphere2.position.z = -30
-  // sphere2.position.x = 6.0
+  // Sphere2 small
+  sphere2 = new THREE.Group()
+  sphere2.name = "hexagonSphere2"
+  sphere2.position.y = 2.5
+  sphere2.position.z = -30
+  sphere2.position.x = 6.0
 
-  // createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
-  // sphere2.scale.set(0.5,0.5,0.5)
-  // sphere2.children.forEach( mesh => {
-  //   mesh.name = "hexa2"
-  // })
+  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere2)
+  sphere2.scale.set(0.5,0.5,0.5)
+  sphere2.children.forEach( mesh => {
+    mesh.name = "hexa2"
+  })
 
 
-  // // Sphere3 small
-  // sphere3 = new THREE.Group()
-  // sphere3.name = "hexagonSphere3"
-  // sphere3.position.y = 2.5
-  // sphere3.position.z = -30
-  // sphere3.position.x = -6.0
+  // Sphere3 small
+  sphere3 = new THREE.Group()
+  sphere3.name = "hexagonSphere3"
+  sphere3.position.y = 2.5
+  sphere3.position.z = -30
+  sphere3.position.x = -6.0
 
-  // createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere3)
-  // sphere3.scale.set(0.5,0.5,0.5)
-  // sphere3.children.forEach( mesh => {
-  //   mesh.name = "hexa3"
-  // })
+  createHexagonSphere3D(params.sphere2.radius, params.sphere2.subdivide, params.sphere2.tileSize , sphere3)
+  sphere3.scale.set(0.5,0.5,0.5)
+  sphere3.children.forEach( mesh => {
+    mesh.name = "hexa3"
+  })
 
 
   
@@ -334,9 +334,9 @@ function animate()
 
 
     //---
-    // if(isRotateSphere) {
-    //   sphereRotationMove(time)
-    // }
+    if(isRotateSphere) {
+      sphereRotationMove(time)
+    }
  
 
 
@@ -648,7 +648,7 @@ function TextureImageTile(objectGroup) {
     // Hexagon
     if(sphereCount == 2) {
       if(i == 18  ) { texture.rotation = 1 }
-      if(i == 8  || i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
+      if(i == 43 || i == 8  || i == 20 || i == 11 || i == 5  || i == 33 || i == 17  || i == 34 || i == 42 || i == 38  || i == 23 || i == 32 || i == 29 || i == 40 ) { texture.rotation = 0.5 }
       if(i == 10 || i == 6  || i == 39 || i == 41 || i == 30 || i == 13 ) { texture.rotation = -0.5 }  
       if(i == 16) { texture.rotation = 0.45}  
       if(i == 14) { texture.rotation = -0.75} 
