@@ -797,8 +797,10 @@ function onPointerMove( event ) {
           gsap.to(mesh.material, {opacity: 1});
 
           control.enableRotate = false
+          control.enableZoom = false
           control.reset()
-          console.log();
+
+
 
         }
 
