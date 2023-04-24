@@ -20,7 +20,8 @@ const pointer = new THREE.Vector2();
 let particularGruop
 let modularGruop
 let isRotateSphere = false
-let opacitEffectKey = 0
+let opacitEffectKey = false
+let isWaterAnimation = true
 export let scene
 const canvasWebGl = document.querySelector('canvas.webgl');
 let pane; 
@@ -361,7 +362,16 @@ function animate()
       sphereRotationMove(time)
     }
  
+    // Water Aniamtion
+    if(isWaterAnimation) {
+      water.material.uniforms[ 'time' ].value += 0.1 / 60.0;
+    }
 
+    
+    // Effect Camera Raycaster
+    if(opacitEffectKey == 1) {
+      OpacityRaycasterCameraEffect()
+    }
 
 
     
@@ -375,26 +385,6 @@ function animate()
     // const x = center.x + radiusOrbit * Math.cos(angle);
     // const z = center.z + radiusOrbit * Math.sin(angle);
     // sphere2.position.set(x, 0 , z);
-
-    // Water Aniamtion
-    water.material.uniforms[ 'time' ].value += 0.1 / 60.0;
-
-    // sphere.children.forEach( mesh => {
-    //   mesh.material.opacity = 0.4
-    // })
-
-    // Effect Camera Raycaster
-    if(opacitEffectKey == 1) {
-      OpacityRaycasterCameraEffect()
-    }
-
-
-
-
-
-
-    // console.log(scene.children);
-
 
     stats.update()
     control.update()
@@ -758,16 +748,54 @@ function onPointerMove( event ) {
     const intersects = raycaster.intersectObjects( scene.children );
     let prevObject =  null
     for ( let i = 0; i < intersects.length; i ++ ) {
-      
+      console.log(intersects);
       if(intersects[ i ].object.position.z == 1) 
       {
         gsap.to(intersects[ i ].object.position , { z: 0})
       } else 
       {
-        if(intersects[ i ].object.material.opacity == 1) 
+        if(intersects[ i ].object.material.opacity == 1 && intersects[ i ].object.name == 'hexa') 
         {
 
-          gsap.to(intersects[ i ].object.position , { z: 1})
+          isRotateSphere = false
+          gsap.to(sphere.position  , { z: -30 })
+          gsap.to(sphere2.position , { z: -30 })
+          gsap.to(sphere3.position , { z: -30 })
+          // Water
+          gsap.to(water.position   , { z: -30 })
+          water.visible = false
+          opacitEffectKey = false
+    
+          // Sphere1
+          sphere.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 0})
+          })
+          // Sphere2
+          sphere2.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 0})
+          })
+          // Sphere3
+          sphere3.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 0})
+          })
+
+   
+          // intersects[ i ].object.material.map.center.x = 0.5
+          // intersects[ i ].object.material.map.center.y = 0.5
+          intersects[ i ].object.material.map.rotation = 0.5
+          let geometry = new THREE.PlaneGeometry(15,15)
+          let material = new THREE.MeshBasicMaterial({
+            transparent: 1,
+            opacity: 0, 
+            map : intersects[ i ].object.material.map
+          })
+          let mesh = new THREE.Mesh(geometry,material)
+          mesh.position.z = -15
+          scene.add(mesh)
+          gsap.to(mesh.position, {z: 0 , ease: "Back.in(1.6)"});
+          gsap.to(mesh.material, {opacity: 1});
+
+          control.enableRotate = false
 
         }
 
