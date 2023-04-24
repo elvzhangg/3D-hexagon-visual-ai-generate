@@ -646,7 +646,7 @@ function TextureImageTile(objectGroup) {
 
   // Start : 44
   for(let i = 1; i < loopSubdivision ; i++) {
-    let texture = textureLoader.load(`/sphere${sphereCount}/new/00${i}.jpg`)
+    let texture = textureLoader.load(`./sphere${sphereCount}/new/00${i}.jpg`)
     texture.flipY = false
     texture.center.x = 0.5
     texture.center.y = 0.5
