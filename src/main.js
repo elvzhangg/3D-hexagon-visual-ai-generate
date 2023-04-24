@@ -782,8 +782,9 @@ function onPointerMove( event ) {
    
           // intersects[ i ].object.material.map.center.x = 0.5
           // intersects[ i ].object.material.map.center.y = 0.5
-          intersects[ i ].object.material.map.rotation = 0.5
-          let geometry = new THREE.PlaneGeometry(15,15)
+
+          intersects[ i ].object.material.map.rotation = 1
+          let geometry = new THREE.PlaneGeometry(15, 15, 15, 15)
           let material = new THREE.MeshBasicMaterial({
             transparent: 1,
             opacity: 0, 
@@ -796,6 +797,8 @@ function onPointerMove( event ) {
           gsap.to(mesh.material, {opacity: 1});
 
           control.enableRotate = false
+          control.reset()
+          console.log();
 
         }
 
