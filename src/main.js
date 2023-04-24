@@ -51,11 +51,13 @@ manager.onLoad = function ( ) {
 
   // document.querySelector('.loading').style.opacity = percentage
   gsap.to('.loading', { opacity: 0 , display: 'none' })
-  gsap.to(sphere.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)" , onComplete: () => {
+
+  gsap.to(sphere.position,  {z: 0, duration: 1, ease: "Back.inOut(1.1)" , onComplete: () => {
       isRotateSphere = true
   }})
-  gsap.to(sphere2.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
-  gsap.to(sphere3.position, {z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+
+  gsap.to(sphere2.position, { z: 0, duration: 1, ease: "Back.inOut(1.1)"})
+  gsap.to(sphere3.position, { z: 0, duration: 1, ease: "Back.inOut(1.1)"})
 };
 
 
@@ -76,7 +78,7 @@ function init()
 
 
   camera = new THREE.PerspectiveCamera(45 , sizes.width / sizes.height , 0.1 , 3000 )
-  camera.position.z = 15
+  camera.position.z = 19
   scene.add(camera)
 
   
@@ -100,22 +102,23 @@ function init()
   // scene.add(axis)
 
   params = {
+    zCamera: 20,
     sphere1: {
-      radius: 3.5, 
+      radius: 3.54, 
       subdivide: 3, 
-      tileSize: .95,
+      tileSize: .98,
       sides: 0,
     },
     sphere2: {
-      radius: 3, 
+      radius: 4.51, 
       subdivide:2, 
-      tileSize: .95,
+      tileSize: .98,
       sides: 0,
     },
     sphere3: {
-      radius: 3, 
+      radius: 3.04, 
       subdivide:2, 
-      tileSize: .95,
+      tileSize: .98,
       sides: 0,
     }
   }
@@ -124,6 +127,17 @@ function init()
     expanded:  false
   })
 
+
+  // Sphere1
+  let Folder0 = pane.addFolder({
+    title: "Camera",
+  })
+
+  Folder0.addInput(camera.position, 'z' , {
+    min: 0,
+    max: 50,
+    step: 1,
+  }).on('change', () => manager.onLoad());
 
   // Sphere1
   let Folder1 = pane.addFolder({
@@ -243,17 +257,17 @@ function init()
   //   light.position.set(1800,500,1800);
 
 
-    var light = new THREE.SpotLight(0xFFFFFF, 3);
-    light.position.set(5, 5, 2);
-    light.castShadow = true;
-    light.shadow.mapSize.width = 10000;
-    light.shadow.mapSize.height = light.shadow.mapSize.width;
-    light.penumbra = 0.5;
-    scene.add( light );
+    // var light = new THREE.SpotLight(0xFFFFFF, 3);
+    // light.position.set(5, 5, 2);
+    // light.castShadow = true;
+    // light.shadow.mapSize.width = 10000;
+    // light.shadow.mapSize.height = light.shadow.mapSize.width;
+    // light.penumbra = 0.5;
+    // scene.add( light );
 
-    var lightBack = new THREE.PointLight(0x0FFFFF, 1);
-    lightBack.position.set(0, -3, -1);
-    scene.add(lightBack);
+    // var lightBack = new THREE.PointLight(0x0FFFFF, 1);
+    // lightBack.position.set(0, -3, -1);
+    // scene.add(lightBack);
 
 
   // Texture Image
@@ -296,6 +310,13 @@ function init()
   sphere3.children.forEach( mesh => {
     mesh.name = "hexa3"
   })
+
+
+  
+
+
+
+
 
 
   
