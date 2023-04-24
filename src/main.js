@@ -733,7 +733,8 @@ function sphereRotationMove(time) {
 }
 
 
-
+let tileChangetoPlane = false
+let prevRotation = 0
 function onPointerMove( event ) {
 
 	// calculate pointer position in normalized device coordinates
@@ -748,14 +749,67 @@ function onPointerMove( event ) {
     const intersects = raycaster.intersectObjects( scene.children );
     let prevObject =  null
     for ( let i = 0; i < intersects.length; i ++ ) {
-      console.log(intersects);
+     
       if(intersects[ i ].object.position.z == 1) 
       {
-        gsap.to(intersects[ i ].object.position , { z: 0})
-      } else 
+        // gsap.to(intersects[ i ].object.position , { z: 0})
+      } 
+      else 
       {
+       
+
+        // Back to Goemetry
+        if(intersects[ i ].object.material.opacity == 0 && intersects[ i ].object.name == 'hexa' && tileChangetoPlane == true) 
+        {
+          // change back to hexagon tile
+          tileChangetoPlane = true
+          
+          isRotateSphere = true
+          gsap.to(sphere.position  , { z: 0 })
+          gsap.to(sphere2.position , { z: 0 })
+          gsap.to(sphere3.position , { z: 0 })
+          // Water
+          gsap.to(water.position   , { z: 0 })
+          water.visible = true
+          opacitEffectKey = true
+
+          // Sphere1
+          sphere.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 1})
+          })
+          // Sphere2
+          sphere2.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 1})
+          })
+          // Sphere3
+          sphere3.children.forEach( mesh => {
+            gsap.to(mesh.material  , { opacity: 1})
+          })
+
+
+          intersects[ i ].object.material.map.rotation = prevRotation
+
+
+          scene.children.forEach( mesh => {
+            if(mesh.name == 'planeImage') {
+              gsap.to(mesh.material  , { opacity: 0})
+              scene.remove(mesh)
+              control.enableRotate = true
+              control.enableZoom = true
+
+            }
+          })
+
+
+
+        }
+
+
+        // Change to Plane
         if(intersects[ i ].object.material.opacity == 1 && intersects[ i ].object.name == 'hexa') 
         {
+          // change back to hexagon tile
+          tileChangetoPlane = true
 
           isRotateSphere = false
           gsap.to(sphere.position  , { z: -30 })
@@ -780,10 +834,16 @@ function onPointerMove( event ) {
           })
 
    
-          // intersects[ i ].object.material.map.center.x = 0.5
-          // intersects[ i ].object.material.map.center.y = 0.5
+          
+          // Texture stretch
+          prevRotation = intersects[ i ].object.material.map.rotation
+          intersects[ i ].object.material.map.rotation = 0
 
-          intersects[ i ].object.material.map.rotation = 1
+
+          // Filename Image
+          let filename = Number(intersects[ i ].object.material.map.source.data.src.split('/new/')[1].split('.jpg')[0].split('00')[1])
+
+
           let geometry = new THREE.PlaneGeometry(15, 15, 15, 15)
           let material = new THREE.MeshBasicMaterial({
             transparent: 1,
@@ -792,17 +852,28 @@ function onPointerMove( event ) {
           })
           let mesh = new THREE.Mesh(geometry,material)
           mesh.position.z = -15
+
+          console.log(filename);
+          // Rotation Imgea
+          if(filename == 26 || filename == 25 || filename == 65 || filename == 6) { mesh.rotation.z = Math.PI/2 }
+          if(filename == 27) { mesh.rotation.z = -Math.PI }
+
+          
+          
+          mesh.name = "planeImage"
           scene.add(mesh)
-          gsap.to(mesh.position, {z: 0 , ease: "Back.in(1.6)"});
-          gsap.to(mesh.material, {opacity: 1});
 
-          control.enableRotate = false
-          control.enableZoom = false
+
           control.reset()
+          gsap.to(mesh.position, {z: 0 , ease: "Back.in(1.6)" });
+          gsap.to(mesh.material, {opacity: 1 , onComplete: () => {
+            control.enableRotate = false
+            control.enableZoom = false
+          }});
 
-
-
+  
         }
+
 
       }
 
