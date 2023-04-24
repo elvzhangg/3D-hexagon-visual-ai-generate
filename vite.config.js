@@ -3,7 +3,6 @@ import { defineConfig } from "vite"
 
 
 export default defineConfig({
-    base: '/elvzhangg/3D-hexagon-visual-ai-generate/',
     server: {
       watch: {
         usePolling: true
