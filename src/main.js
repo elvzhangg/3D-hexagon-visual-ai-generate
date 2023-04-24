@@ -78,7 +78,7 @@ function init()
 
 
   camera = new THREE.PerspectiveCamera(45 , sizes.width / sizes.height , 0.1 , 3000 )
-  camera.position.z = 19
+  camera.position.z = 25
   scene.add(camera)
 
   
@@ -102,7 +102,7 @@ function init()
   // scene.add(axis)
 
   params = {
-    zCamera: 20,
+    zCamera: 25,
     sphere1: {
       radius: 3.54, 
       subdivide: 3, 
