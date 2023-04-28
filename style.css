@@ -48,3 +48,26 @@ img {
   font-family: 'Courier New', Courier, monospace;
   background-color: black;
 }
+
+
+
+.container {
+  display: flex;
+  justify-content: center;
+
+}
+
+.top {
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  height: 50px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+}
+
+.prev , .current {
+  text-align: center;
+  width: 50%;
+}

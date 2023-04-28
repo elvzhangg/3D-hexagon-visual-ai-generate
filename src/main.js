@@ -1,4 +1,4 @@
-console.log('%cCreated By: Supadet Pinsuwannabut', 'background-color:red ;color: white; font-size: 30px; font-weight: bold');
+console.log('%cCreated By: Supadett Pinsuwannabut', 'background-color:red ;color: white; font-size: 30px; font-weight: bold');
 console.log('https://github.com/ToonKru3');
 import '/style.css'
 import * as THREE from 'three';
@@ -757,10 +757,15 @@ function onPointerMove( event ) {
       else 
       {
        
-
         // Back to Goemetry
         if(intersects[ i ].object.material.opacity == 0 && intersects[ i ].object.name == 'hexa' && tileChangetoPlane == true) 
         {
+          // console.log(intersects[ i ].object.material.map.rotation);
+          // console.log(prevRotation);
+          intersects[ i ].object.material.map.rotation = prevRotation
+          // console.log(intersects[ i ].object.material.map.rotation);
+          // console.log(intersects[ i ].object.material.map.rotation);
+          // console.log(prevRotation);
           // change back to hexagon tile
           tileChangetoPlane = true
           
@@ -786,8 +791,9 @@ function onPointerMove( event ) {
             gsap.to(mesh.material  , { opacity: 1})
           })
 
+          // intersects[ i ].object.material.map.rotation = prevRotation
+          // document.querySelector('.current').innerHTML = 'Current: ' + prevRotation
 
-          intersects[ i ].object.material.map.rotation = prevRotation
 
 
           scene.children.forEach( mesh => {
@@ -808,6 +814,11 @@ function onPointerMove( event ) {
         // Change to Plane
         if(intersects[ i ].object.material.opacity == 1 && intersects[ i ].object.name == 'hexa') 
         {
+          control.reset()
+          control.enableRotate = false
+          control.enableZoom = false
+
+
           // change back to hexagon tile
           tileChangetoPlane = true
 
@@ -833,17 +844,11 @@ function onPointerMove( event ) {
             gsap.to(mesh.material  , { opacity: 0})
           })
 
-   
-          
-          // Texture stretch
-          prevRotation = intersects[ i ].object.material.map.rotation
-          intersects[ i ].object.material.map.rotation = 0
-
 
           // Filename Image
           let filename = Number(intersects[ i ].object.material.map.source.data.src.split('/new/')[1].split('.jpg')[0].split('00')[1])
 
-
+       
           let geometry = new THREE.PlaneGeometry(15, 15, 15, 15)
           let material = new THREE.MeshBasicMaterial({
             transparent: 1,
@@ -853,7 +858,7 @@ function onPointerMove( event ) {
           let mesh = new THREE.Mesh(geometry,material)
           mesh.position.z = -15
 
-          console.log(filename);
+          // console.log(filename);
           // Rotation Imgea
           if(filename == 26 || filename == 25 || filename == 65 || filename == 6) { mesh.rotation.z = Math.PI/2 }
           if(filename == 27) { mesh.rotation.z = -Math.PI }
@@ -863,14 +868,31 @@ function onPointerMove( event ) {
           mesh.name = "planeImage"
           scene.add(mesh)
 
-
-          control.reset()
+          // console.log(filename);
+          
           gsap.to(mesh.position, {z: 0 , ease: "Back.in(1.6)" });
-          gsap.to(mesh.material, {opacity: 1 , onComplete: () => {
-            control.enableRotate = false
-            control.enableZoom = false
-          }});
+          gsap.to(mesh.material, {opacity: 1 });
+          // Texture stretch
 
+
+          // backup previous rotation value\
+    
+          
+          // console.log(intersects[ i ].object.material.map.rotation);
+          // console.log(prevRotation);
+          prevRotation = intersects[ i ].object.material.map.rotation
+          intersects[ i ].object.material.map.rotation = 0
+          // console.log(intersects[ i ].object.material.map.rotation);
+          // console.log(prevRotation);
+
+          // document.querySelector('.prev').innerHTML = 'Prev: ' + prevRotation
+          
+          
+
+          // document.querySelector('.current').innerHTML = 'Current: ' + mesh.material.map.rotation
+
+          // console.log(prevRotation);
+          // console.log(intersects[ i ].object.material.map.rotation);
   
         }
 
