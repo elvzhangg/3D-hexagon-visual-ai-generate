@@ -765,7 +765,7 @@ function onPointerMove( event ) {
           intersects[ i ].object.material.map.rotation = prevRotation
           // console.log(intersects[ i ].object.material.map.rotation);
           // console.log(intersects[ i ].object.material.map.rotation);
-          // console.log(prevRotation);
+          // console.log(prevRotation);N
           // change back to hexagon tile
           tileChangetoPlane = true
           
